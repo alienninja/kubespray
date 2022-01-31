@@ -2,6 +2,11 @@
 # Kubernetes dashboard
 # RBAC required. see docs/getting-started.md for access details.
 # dashboard_enabled: false
+# dashboard_nodeselector: kubernetes.io/os: "linux"
+# dashboard_service_type: "LoadBalancer"
+# dashboard_service_loadbalancer_ip:
+# dashboard_service_cluster_ip:
+# kubernetes_metrics_scraper_nodeselector: kubernetes.io/os: "linux"
 
 # Helm deployment
 helm_enabled: false

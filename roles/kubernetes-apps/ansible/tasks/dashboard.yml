@@ -1,4 +1,9 @@
 ---
+- name: Kubernetes Apps | check dashboard_service_type value
+  fail:
+    msg: "dashboard_service_type can only be 'ClusterIP' or 'LoadBalancer'"
+  when: dashboard_service_type not in ['ClusterIP', 'LoadBalancer']
+
 - name: Kubernetes Apps | Lay down dashboard template
   template:
     src: "{{ item.file }}.j2"

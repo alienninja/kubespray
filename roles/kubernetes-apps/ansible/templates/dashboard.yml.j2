@@ -208,6 +208,10 @@ spec:
               port: 8443
             initialDelaySeconds: 30
             timeoutSeconds: 30
+{% if dashboard_nodeselector %}
+      nodeSelector:
+        {{ dashboard_nodeselector | to_nice_yaml | indent(width=8) }}
+{% endif %}
       volumes:
         - name: kubernetes-dashboard-certs
           secret:
@@ -239,9 +243,17 @@ spec:
       targetPort: 8443
   selector:
     k8s-app: kubernetes-dashboard
+  type: {{ dasboard_service_type }}
+{% if dashboard_service_type == "ClusterIP" and dashboard_service_cluster_ip != "" %}
+  clusterIP: {{ dashboard_service_cluster_ip }}
+{% endif %}
+{% if dashboard_service_type == "LoadBalancer" and dashboard_service_loadbalancer_ip != "" %}
+  loadBalancerIP: {{ dashboard_service_loadbalancer_ip }}
+{% endif %}
+
 
 ---
-# ------------------- Metrics Scrapper Service Account ------------------- #
+# ------------------- Metrics Scraper Service Account ------------------- #
 
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -257,7 +269,7 @@ rules:
 
 ---
 
-# ------------------- Metrics Scrapper Service  ------------------- #
+# ------------------- Metrics Scraper Service  ------------------- #
 kind: Service
 apiVersion: v1
 metadata:
@@ -274,7 +286,7 @@ spec:
 
 ---
 
-# ------------------- Metrics Scrapper Deployment  ------------------- #
+# ------------------- Metrics Scraper Deployment  ------------------- #
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -314,6 +326,11 @@ spec:
       volumes:
       - name: tmp-volume
         emptyDir: {}
+{% if kubernetes_metrics_scraper_nodeselector %}
+      nodeSelector:
+        {{ kubernetes_metrics_scraper_nodeselector | to_nice_yaml | indent(width=8) }}
+{% endif %}
+
 {% if dashboard_master_toleration %}
       tolerations:
         - key: node-role.kubernetes.io/master
